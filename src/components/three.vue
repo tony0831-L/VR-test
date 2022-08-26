@@ -12,10 +12,13 @@
 import init from '../utils/index.js'
 
 export default {
-	setup(){
+	data(){
+		return{
+			obj:{}
+		}
 	},
 	mounted(){
-		new init();
+		this.obj =JSON.parse(JSON.stringify(new init())) ;
 	}
 }
 </script>
