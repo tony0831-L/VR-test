@@ -4,11 +4,9 @@ import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { VRButton } from './three.js/examples/jsm/webxr/VRButton.js';
 
 export default class Three{
-
     constructor(){
         this.init()
     }
-
     init(){
         this.setScene()
         this.setCam()
@@ -19,17 +17,14 @@ export default class Three{
         this.setlight()
         this.animate()
     }
-
     setScene(){
         this.scene = new THREE.Scene();        
         this.scene.background = new THREE.Color( 0xffffff );
     }
-
     setCam(){
         this.camera = new THREE.PerspectiveCamera( 75 , window.innerWidth / window.innerHeight, 0.1, 1000 );
         this.camera.position.set(15,32.5,25);
     }
-
     setRender(){
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
         this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -71,7 +66,6 @@ export default class Three{
         window.addEventListener( 'resize', this.onWindowResize(this) );
 
     }
-
     setVRContorl(){
         document.body.appendChild( VRButton.createButton( this.renderer ) );
         this.renderer.xr.enabled = true;
@@ -84,15 +78,14 @@ export default class Three{
             false
         )
     }
-
     loadModels(){
-        this.modelLoader('./src/model/classroom/',{x:25,y:25,z:25},{x:0,y:0,z:0});
-        this.modelLoader('./src/model/women/',{x:19,y:19,z:19},{x:15,y:1,z:-70});
-        this.mainCharacterLoader('./src/model/man/');
-        this.modelLoader('./src/model/chair/',{x:30,y:25,z:30},{x:15,y:1,z:25},3.15);
-        this.modelLoader('./src/model/table/',{x:30,y:25,z:30},{x:15,y:1,z:-60});
+        let url = 'https://tony0831-l.github.io/VR-test/src/model/'
+        this.modelLoader(url+'classroom/',{x:25,y:25,z:25},{x:0,y:0,z:0});
+        this.modelLoader(url+'women/',{x:19,y:19,z:19},{x:15,y:1,z:-70});
+        this.mainCharacterLoader(url+'man/');
+        this.modelLoader(url+'chair/',{x:30,y:25,z:30},{x:15,y:1,z:25},3.15);
+        this.modelLoader(url+'./table/',{x:30,y:25,z:30},{x:15,y:1,z:-60});
     }
-
     modelLoader(path,size,position,rotation){
         this.loader = new GLTFLoader().setPath(path);
         this.loader.load('scene.glb',
@@ -107,7 +100,6 @@ export default class Three{
             console.log(error)
         })
     }
-
     setlight(){
 
         let light = new THREE.HemisphereLight( 0xeeeeff, 0x777788, 0.75 );
@@ -122,7 +114,6 @@ export default class Three{
         light = new THREE.PointLight(0xffffff, 3, 10);
         this.camera.add( light );
     }
-
     mainCharacterLoader(path){
         const loader = new GLTFLoader().setPath(path);
         loader.load('scene.glb',
@@ -138,7 +129,6 @@ export default class Three{
             console.log(error)
         })
     }
-
     keyDownEventHandler = (e)=>{
         switch(e.code){
             case 'KeyW' :
@@ -155,7 +145,6 @@ export default class Three{
                 break;
         }
     }
-
     keyUpEventHandler = (e)=>{
                 switch(e.code){
                     case 'KeyW' :
@@ -172,17 +161,14 @@ export default class Three{
                         break;
                 }
     }
-
     onWindowResize(three){
         three.camera.aspect = window.innerWidth / window.innerHeight;
         three.camera.updateProjectionMatrix();
         three.renderer.setSize( window.innerWidth, window.innerHeight );
     }
-
     render(){
         this.renderer.render(this.scene, this.camera)
     }
-
     animate() {
         this.renderer.setAnimationLoop( this.animate.bind((this)) );
         this.time  = performance.now();
