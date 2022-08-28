@@ -20,6 +20,7 @@ html,body{
   position: absolute;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 #blocker{
@@ -38,5 +39,18 @@ html,body{
   color: #fcfcfc;
   position: absolute;
   font-size: 200%;
+  cursor: pointer;
+}
+
+#dialogue{
+  width: 100%;
+  height: 20%;
+  color: #fcfcfc;
+  background-color: rgba(51, 51, 51,0.85);
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-90%);
   cursor: pointer;
 }
