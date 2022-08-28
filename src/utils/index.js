@@ -105,9 +105,9 @@ export default class Three{
     loadModels(){
         this.wall = []
         this.npc = []
-        // let url = 'https://tony0831-l.github.io/VR-test/src/model/'
+        let url = 'https://tony0831-l.github.io/VR-test/src/model/'
         // let url = './src/model/'
-        this.modelLoader(url+'classroom/',{type:'wall'},{x:25,y:25,z:25},{x:0,y:0,z:0});
+        // this.modelLoader(url+'classroom/',{type:'wall'},{x:25,y:25,z:25},{x:0,y:0,z:0});
         this.modelLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
         this.modelLoader(url+'women/',{type:'npc'},{x:19,y:19,z:19},{x:15,y:1,z:-70});
         this.mainCharacterLoader(url+'man/');
