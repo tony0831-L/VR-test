@@ -1,7 +1,7 @@
 import * as THREE from './three.js/build/three.module.js' 
 import {PointerLockControls} from './three.js/examples/jsm/controls/PointerLockControls.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from './three.js/examples/jsm/loaders/FBXLoader.js';
+import {createText} from './three.js/examples/jsm/webxr/Text2D';
 import { VRButton } from './three.js/examples/jsm/webxr/VRButton.js';
 
 export default class Three{
@@ -91,13 +91,13 @@ export default class Three{
 
     }
     setVRContorl(){
+        let camera = this.camera
         this.blocker.appendChild( VRButton.createButton( this.renderer ) );
         this.renderer.xr.enabled = true;
         this.renderer.xr.addEventListener(
             'sessionstart',
             function() {
-                this.controls.lock()
-                this.camera.position.y = -50 ;
+                console.log(navigator.xr)
             },
             false
         )
@@ -107,9 +107,9 @@ export default class Three{
         this.npc = []
         // let url = 'https://tony0831-l.github.io/VR-test/src/model/'
         let url = './src/model/'
-        // this.modelLoader(url+'classroom/',{type:'wall'},{x:25,y:25,z:25},{x:0,y:0,z:0});
+        this.modelLoader(url+'classroom/',{type:'wall'},{x:25,y:25,z:25},{x:0,y:0,z:0});
         // this.modelLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
-        this.testLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
+        // this.testLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
         // this.testLoader(url+'disney-cinderella-castle-joseph-starnault/source/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
         this.modelLoader(url+'women/',{type:'npc'},{x:19,y:19,z:19},{x:15,y:1,z:-70});
         this.mainCharacterLoader(url+'man/');
@@ -118,32 +118,15 @@ export default class Three{
     }
     testLoader(path,cat,size,position,rotation){
         this.loader = new GLTFLoader().setPath(path);
-        this.loader.load('scene.gltf',
+        this.loader.load('untitled.gltf',
         (gltf)=>{
+        console.log(gltf);
             gltf.scene.scale.set(size.x,size.y,size.z);
             gltf.scene.position.set(position.x,position.y,position.z);
             if (rotation) {
                 gltf.scene.rotation.y += rotation ;
             }
             switch (cat.type) {
-                case 'npc':
-                    let geometry = new THREE.BoxGeometry( 15, 15, 0 );
-
-                    this.Whitematerial = new THREE.MeshBasicMaterial( { color:  0xffffff } );
-                    this.Whitematerial.transparent = true ;
-                    this.Whitematerial.lightMapIntensity = 2;
-                    this.Whitematerial.opacity = 0.5;
-                    this.balckmaterial = new THREE.MeshBasicMaterial( { color:  0x515151 } );
-                    this.balckmaterial.transparent = true ;
-                    this.balckmaterial.lightMapIntensity = 2;
-                    this.balckmaterial.opacity = 0.85;
-
-                    this.mesh = new THREE.Mesh( geometry, this.Whitematerial );
-                    this.mesh.position.set(position.x+=10,position.y+=30,position.z+=5)
-                    this.oldmesh= this.mesh;
-                    this.scene.add( this.mesh );
-                    this.npc.push(this.mesh)
-                    break;
                 case 'wall':
                     this.wall.push(gltf.scene)
                     break;
@@ -152,7 +135,7 @@ export default class Three{
             }
             this.scene.add(gltf.scene);
         },(xhr)=>{
-            console.log(xhr );
+            // console.log(xhr );
         },(error)=>{
             console.log(error)
         })
@@ -182,6 +165,10 @@ export default class Three{
                     this.mesh = new THREE.Mesh( geometry, this.Whitematerial );
                     this.mesh.position.set(position.x+=10,position.y+=30,position.z+=5)
                     this.oldmesh= this.mesh;
+
+                    this.mesh2 = createText( 'test', 2 );
+                    this.mesh2.position.set(position.x,position.y,position.z);
+                    this.scene.add(this.mesh2)
                     this.scene.add( this.mesh );
                     this.npc.push(this.mesh)
                     break;
@@ -325,6 +312,7 @@ export default class Three{
         this.renderer.render(this.scene, this.camera)
     }
     animate() {
+        // console.log(this.camera.position)
         this.renderer.setAnimationLoop( this.animate.bind((this)) );
         this.time  = performance.now();
     
