@@ -1,7 +1,7 @@
 import * as THREE from './three.js/build/three.module.js' 
 import {PointerLockControls} from './three.js/examples/jsm/controls/PointerLockControls.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
-import { FontLoader } from './three.js/examples/jsm/loaders/FontLoader.js';
+import { FBXLoader } from './three.js/examples/jsm/loaders/FBXLoader.js';
 import { VRButton } from './three.js/examples/jsm/webxr/VRButton.js';
 
 export default class Three{
@@ -105,14 +105,57 @@ export default class Three{
     loadModels(){
         this.wall = []
         this.npc = []
-        let url = 'https://tony0831-l.github.io/VR-test/src/model/'
-        // let url = './src/model/'
+        // let url = 'https://tony0831-l.github.io/VR-test/src/model/'
+        let url = './src/model/'
         // this.modelLoader(url+'classroom/',{type:'wall'},{x:25,y:25,z:25},{x:0,y:0,z:0});
-        this.modelLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
+        // this.modelLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
+        this.testLoader(url+'castal/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
+        // this.testLoader(url+'disney-cinderella-castle-joseph-starnault/source/',{type:'wall'},{x:400,y:400,z:400},{x:0,y:-3,z:0});
         this.modelLoader(url+'women/',{type:'npc'},{x:19,y:19,z:19},{x:15,y:1,z:-70});
         this.mainCharacterLoader(url+'man/');
         this.modelLoader(url+'chair/',{type:'wall'},{x:30,y:25,z:30},{x:15,y:1,z:25},3.15);
         this.modelLoader(url+'./table/',{type:'wall'},{x:30,y:25,z:30},{x:15,y:1,z:-60});
+    }
+    testLoader(path,cat,size,position,rotation){
+        this.loader = new GLTFLoader().setPath(path);
+        this.loader.load('scene.gltf',
+        (gltf)=>{
+            gltf.scene.scale.set(size.x,size.y,size.z);
+            gltf.scene.position.set(position.x,position.y,position.z);
+            if (rotation) {
+                gltf.scene.rotation.y += rotation ;
+            }
+            switch (cat.type) {
+                case 'npc':
+                    let geometry = new THREE.BoxGeometry( 15, 15, 0 );
+
+                    this.Whitematerial = new THREE.MeshBasicMaterial( { color:  0xffffff } );
+                    this.Whitematerial.transparent = true ;
+                    this.Whitematerial.lightMapIntensity = 2;
+                    this.Whitematerial.opacity = 0.5;
+                    this.balckmaterial = new THREE.MeshBasicMaterial( { color:  0x515151 } );
+                    this.balckmaterial.transparent = true ;
+                    this.balckmaterial.lightMapIntensity = 2;
+                    this.balckmaterial.opacity = 0.85;
+
+                    this.mesh = new THREE.Mesh( geometry, this.Whitematerial );
+                    this.mesh.position.set(position.x+=10,position.y+=30,position.z+=5)
+                    this.oldmesh= this.mesh;
+                    this.scene.add( this.mesh );
+                    this.npc.push(this.mesh)
+                    break;
+                case 'wall':
+                    this.wall.push(gltf.scene)
+                    break;
+                default:
+                    break;
+            }
+            this.scene.add(gltf.scene);
+        },(xhr)=>{
+            console.log(xhr );
+        },(error)=>{
+            console.log(error)
+        })
     }
     modelLoader(path,cat,size,position,rotation){
         this.loader = new GLTFLoader().setPath(path);
@@ -149,7 +192,8 @@ export default class Three{
                     break;
             }
             this.scene.add(gltf.scene);
-        },()=>{},(error)=>{
+        },(xhr)=>{
+        },(error)=>{
             console.log(error)
         })
     }
@@ -158,7 +202,7 @@ export default class Three{
         let light = new THREE.AmbientLight( 0x404040 , 2 ); // soft white light
         this.scene.add( light );
 
-        light = new THREE.DirectionalLight(0xffffff, 3);
+        light = new THREE.DirectionalLight(0xffffff, 2);
         light.position.set(15, 800, 25)
         light.castShadow = true
         this.scene.add(light);
@@ -223,26 +267,28 @@ export default class Three{
         this.npcraycaster.setFromCamera( this.pointer, this.camera );
         let intersections = this.npcraycaster.intersectObjects( this.npc, false );
         let addDialogue = function () {}
-        if (intersections.length) {
+        if (intersections.length ) {
            this.mesh.material = this.balckmaterial;
+           console.log(intersections[0].distance)
            document.addEventListener('click', addDialogue = function() {
-            three.talking = true;
-            three.dialogue.style.display = 'flex';
-            three.camera.position.set(15.47,32.5,-45.7);
-            three.camera.lookAt(15.47,32.5,-45.7);
-            three.controls.unlock();
-            three.blocker.style.opacity = 0;
-            setTimeout(() => {
-                three.dialogue.style.display = "none";
-                three.talking = false;
-                three.blocker.style.opacity = 1;
-                three.controls.lock()
-                document.removeEventListener('click',addDialogue)
-            }, 4000);
+            if (intersections[0].distance <= 30) {
+                three.talking = true;
+                three.dialogue.style.display = 'flex';
+                three.camera.position.set(15.47,32.5,-45.7);
+                three.camera.lookAt(15.47,32.5,-45.7);
+                three.controls.unlock();
+                three.blocker.style.opacity = 0;
+                setTimeout(() => {
+                    three.dialogue.style.display = "none";
+                    three.talking = false;
+                    three.blocker.style.opacity = 1;
+                    three.controls.lock()
+                    document.removeEventListener('click',addDialogue)
+                }, 4000);
+            }
            })
         }else{
             this.mesh.material = this.Whitematerial
-            // document.removeEventListener('click',addDialogue())
         }
     }
     wallEventHandeler(){

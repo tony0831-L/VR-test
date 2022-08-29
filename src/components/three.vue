@@ -23,7 +23,8 @@ export default {
 		}
 	},
 	mounted(){
-		this.obj =JSON.parse(JSON.stringify(new init())) ;
+		this.obj =new init()
+		console.log(this.obj.controls)
 	}
 }
 </script>
